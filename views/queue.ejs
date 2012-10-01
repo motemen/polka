@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Queue</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <ul id="queue">
+<% for (var i = 0; i < queue.length; i++) { %>
+      <li><%= queue[i].url %></li>
+<% } %>
+    </ul>
+    <form action="/queue" method="POST">
+      <input type="url" name="url">
+      <input type="submit" value="enqueue">
+    </form>
+  </body>
+</html>
