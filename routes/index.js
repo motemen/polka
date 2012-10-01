@@ -16,7 +16,7 @@ exports.enqueue = function (req, res) {
 exports.dequeue = function (req, res) {
   // TODO when empty
   currentTrack = queue.shift();
-  res.json(track);
+  res.json(currentTrack);
 };
 
 exports.play = function (req, res) {

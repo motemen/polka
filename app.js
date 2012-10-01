@@ -35,8 +35,6 @@ app.post('/queue', routes.enqueue);
 app.post('/dequeue', routes.dequeue);
 app.get('/play', routes.play);
 
-// /play, /queue
-
 http.createServer(app).listen(app.get('port'), function () {
   console.log("Express server listening on port " + app.get('port'));
 });
