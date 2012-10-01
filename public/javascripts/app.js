@@ -3,10 +3,12 @@ $(function () {
 
   var players = [
     new YouTube(),
-    new SoundCloud()
+    new SoundCloud(),
+    new UploadedFile()
   ];
 
   controller.loop(function (track) {
+    console.log(track);
     for (var i = 0; i < players.length; i++) {
       if (players[i].handlesUrl(track.url)) {
         return players[i].play(track.url);
@@ -171,6 +173,28 @@ SoundCloud.prototype = {
   },
   onPlayerFinished: function () {
     this.deferreds['play'].resolve();
+  }
+};
+// }}}
+
+// UploadedFile {{{
+function UploadedFile () {
+}
+
+UploadedFile.prototype = {
+  handlesUrl: function (url) {
+    return url.indexOf('/') === 0;
+  },
+  play: function (url) {
+    var d = $.Deferred();
+    var audio = $('<audio controls autoplay/>')
+      .attr('src', url)
+      .appendTo(document.body)
+      .bind('ended', function () {
+        console.log('ended');
+        d.resolve();
+      });
+    return d;
   }
 };
 // }}}

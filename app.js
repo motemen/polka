@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var express = require('express')
   , routes = require('./routes')
   , http = require('http')
@@ -29,11 +24,11 @@ app.configure('development', function () {
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
-app.get('/queue', routes.queue);
-app.post('/queue', routes.enqueue);
+app.get ('/',        routes.index);
+app.get ('/play',    routes.play);
+app.get ('/queue',   routes.queue);
+app.post('/queue',   routes.enqueue);
 app.post('/dequeue', routes.dequeue);
-app.get('/play', routes.play);
 
 http.createServer(app).listen(app.get('port'), function () {
   console.log("Express server listening on port " + app.get('port'));

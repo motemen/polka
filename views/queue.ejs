@@ -5,13 +5,17 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
+<% if (currentTrack) { %>
+    <div id="current-track"><%= currentTrack.url %></div>
+<% } %>
     <ul id="queue">
 <% for (var i = 0; i < queue.length; i++) { %>
       <li><%= queue[i].url %></li>
 <% } %>
     </ul>
-    <form action="/queue" method="POST">
+    <form action="/queue" method="POST" enctype="multipart/form-data">
       <input type="url" name="url">
+      <input type="file" name="file">
       <input type="submit" value="enqueue">
     </form>
   </body>
