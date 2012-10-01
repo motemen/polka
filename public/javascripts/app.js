@@ -12,9 +12,6 @@ $(function () {
         return players[i].play(track.url);
       }
     }
-    var d = $.Deferred();
-    d.reject();
-    return d;
   });
 });
 
@@ -35,7 +32,17 @@ Controller.prototype.loop = function (play) {
   var controller = this;
   var next = function () {
     controller.dequeue().done(function (track) {
-      play(track).always(next);
+      if (!track) {
+        setTimeout(next, 2000);
+        return;
+      }
+      var d = play(track);
+      if (d) {
+        d.always(next);
+      } else {
+        console.log('Could not play: ' + track.url);
+        next();
+      }
     });
   };
   next();
