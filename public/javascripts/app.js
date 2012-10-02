@@ -52,8 +52,8 @@ Controller.prototype.loop = function (play) {
 // }}}
 
 // YouTube {{{
+// https://developers.google.com/youtube/iframe_api_reference
 function YouTube () {
-  this.PLAYER_SWF_ID = 'player-youtube-swf';
   this.PLAYER_PLACEHOLDER_ID = 'player-youtube-placeholder';
   this.deferreds = {};
 };
@@ -67,55 +67,47 @@ YouTube.prototype = {
     if (this.deferreds['play']) {
       this.deferreds['play'].reject();
     }
-    this.prepare().done(function (player) {
+    this.prepare(url).done(function (player) {
       player.loadVideoById(videoId);
     });
     return this.deferreds['play'] = $.Deferred();
   },
-  prepare: function () {
+  prepare: function (initUrl) {
     if (this.deferreds['prepare']) {
       return this.deferreds['prepare'];
     }
 
-    var youtube = this;
-    window.onYouTubePlayerReady = function () {
-      YouTube.prototype.onPlayerReady.apply(youtube, arguments);
-    };
-    window.onYouTubePlayerStateChange = function () {
-      YouTube.prototype.onPlayerStateChange.apply(youtube, arguments);
-    };
+    var videoId = this.extractVideoId(initUrl);
+    var d = this.deferreds['prepare'] = $.Deferred();
+
+    $.getScript('//www.youtube.com/iframe_api');
 
     $('<div/>', { id: this.PLAYER_PLACEHOLDER_ID }).appendTo(document.body);
 
-    swfobject.embedSWF(
-      '//www.youtube.com/apiplayer?enablejsapi=1&version=3',
-      this.PLAYER_PLACEHOLDER_ID, '425', '356', '8', null, null,
-      { allowScriptAccess: 'always' },
-      { id: this.PLAYER_SWF_ID }
-    );
+    var youtube = this;
+    window.onYouTubeIframeAPIReady = function () {
+      youtube.player = new YT.Player(youtube.PLAYER_PLACEHOLDER_ID, {
+        videoId: videoId,
+        events: {
+          onReady: function () { d.resolve(youtube.player) },
+          onStateChange: function (e) {
+            youtube.onPlayerStateChange(e);
+          }
+        }
+      });
+    };
 
-    return this.deferreds['prepare'] = $.Deferred();
+    return d;
   },
-  extractVideoId: function (url) {
-    return url.match(/\?v=([^&]+)/)[1];
-  },
-  onPlayerReady: function (playerid) {
-    var player = this.getPlayer();
-    player.addEventListener('onStateChange', 'onYouTubePlayerStateChange');
-    this.deferreds['prepare'].resolve(player);
-  },
-  onPlayerStateChange: function (newState) {
-    var stateName = this.getStateName(newState);
-    console.log(stateName);
-    if (stateName === 'ended' && this.deferreds['play']) {
-      this.deferreds['play'].resolve();
+  onPlayerStateChange: function (e) {
+    if (e.data === YT.PlayerState.ENDED) {
+      if (this.deferreds['play']) {
+        this.deferreds['play'].resolve();
+      }
     }
   },
-  getPlayer: function () {
-    return document.getElementById(this.PLAYER_SWF_ID);
-  },
-  getStateName: function (state) {
-    return [ 'unstarted', 'ended', 'playing', 'paused', 'buffering', undefined, 'cued' ][ state + 1 ];
+  extractVideoId: function (url) {
+    return url.match(/[\?&]v=([^&]+)/)[1];
   }
 };
 // }}}
