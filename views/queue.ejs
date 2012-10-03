@@ -2,21 +2,51 @@
 <html>
   <head>
     <title>Polka - Queue</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="/stylesheets/modern.css">
+    <link rel="stylesheet" href="/stylesheets/site.css">
   </head>
-  <body>
+  <body class="modern-ui">
+    <div class="page secondary">
+      <div class="page-header">
+        <div class="page-header-content">
+          <h1>Polka</h1>
+        </div>
+      </div>
+      <div class="page-region">
+        <div class="page-region-content">
 <% if (currentTrack) { %>
-    <div id="current-track"><%= currentTrack.url %></div>
+          <div id="current-track"><%= currentTrack.url %></div>
 <% } %>
-    <ul id="queue">
+          <h2>Queue</h2>
+          <ol id="queue">
 <% for (var i = 0; i < queue.length; i++) { %>
-      <li><%= queue[i].url %></li>
+            <li><%= queue[i].url %></li>
 <% } %>
-    </ul>
-    <form action="/queue" method="POST" enctype="multipart/form-data">
-      <input type="url" name="url">
-      <input type="file" name="file">
-      <input type="submit" value="enqueue">
-    </form>
+          </ol>
+          <div class="grid">
+            <div class="row">
+              <div class="span5">
+                <h2>Add a URL</h2>
+                <form action="/queue" method="POST" enctype="multipart/form-data">
+                  <div class="input-control text">
+                    <input type="url" name="url">
+                  </div>
+                  <input type="submit" value="enqueue">
+                </form>
+              </div>
+              <div class="span5">
+                <h2>Upload a file</h2>
+                <form action="/queue" method="POST" enctype="multipart/form-data">
+                  <div class="input-control text">
+                    <input type="file" name="file">
+                  </div>
+                  <input type="submit" value="upload">
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

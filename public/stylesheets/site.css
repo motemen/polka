@@ -1,0 +1,14 @@
+.input-control > input[type=url] {
+  border: 2px #bababa solid;
+  width: 100%;
+  padding: 4px 32px 6px 5px;
+  position: relative;
+  background-color: #fff;
+  outline: 0;
+  margin-right: 32px;
+  width: 100%;
+}
+
+.input-control > input[type=url]:focus {
+  border-color: #000;
+}
