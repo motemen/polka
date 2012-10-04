@@ -15,14 +15,37 @@
       <div class="page-region">
         <div class="page-region-content">
 <% if (currentTrack) { %>
-          <div id="current-track"><%= currentTrack.url %></div>
+  <% var track = currentTrack %>
+          <div id="current-track" class="grid">
+            <h2>Current track</h2>
+            <div class="track">
+  <% if (track.image && track.image.url) { %>
+              <img src="<%= track.image.url %>" class="place-left">
+  <% } %>
+              <h3 class="title"><%= track.title || track.url %></h3>
+  <% if (track.title) { %>
+              <a href="<%= track.url %>"><%= track.url %></a>
+  <% } %>
+            </div>
+          </div>
 <% } %>
-          <h2>Queue</h2>
-          <ol id="queue">
+          <div id="queue" class="grid">
+            <h2>Queue</h2>
 <% for (var i = 0; i < queue.length; i++) { %>
-            <li><%= queue[i].url %></li>
+  <% var track = queue[i] %>
+            <div class="track tile double">
+              <div class="tile-content">
+  <% if (track.image && track.image.url) { %>
+              <img src="<%= track.image.url %>" class="place-right">
+  <% } %>
+              <h3 class="title"><%= track.title || track.url %></h3>
+  <% if (track.title) { %>
+              <a href="<%= track.url %>"><%= track.url %></a>
+  <% } %>
+              </div>
+            </div>
 <% } %>
-          </ol>
+          </div>
           <div class="grid">
             <div class="row">
               <div class="span5">
