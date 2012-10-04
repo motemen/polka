@@ -1,5 +1,8 @@
 var queue = [], currentTrack;
 
+var youtube    = require('../lib/track/youtube');
+var soundcloud = require('../lib/track/soundcloud');
+
 exports.index = function (req, res) {
   res.redirect('/queue');
 };
@@ -10,8 +13,21 @@ exports.queue = function (req, res) {
 
 exports.enqueue = function (req, res) {
   if (req.body.url.length) {
-    queue.push({ url: req.body.url });
-    res.redirect('/queue');
+    var url = req.body.url;
+    var handled = [ youtube, soundcloud ].some(function (service) {
+      if (service.handlesUrl(url)) {
+        service.fetchTrackInfo(url, function (track) {
+          console.log(track);
+          queue.push(track);
+          res.redirect('/queue');
+        });
+        return true;
+      }
+    });
+    if (!handled) {
+      queue.push({ url: url });
+      res.redirect('/queue');
+    }
   } else if (req.files.file) {
     var file = req.files.file;
     var fs   = require('fs'),
