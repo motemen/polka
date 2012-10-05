@@ -12,7 +12,7 @@ exports.queue = function (req, res) {
 };
 
 exports.enqueue = function (req, res) {
-  if (req.body.url.length) {
+  if (req.body.url) {
     var url = req.body.url;
     var handled = [ youtube, soundcloud ].some(function (service) {
       if (service.handlesUrl(url)) {
@@ -40,7 +40,7 @@ exports.enqueue = function (req, res) {
       fs.createWriteStream(path.join(__dirname, '..', 'public', 'uploaded', filename)),
       function (error) {
         if (!error) {
-          queue.push({ url: '/uploaded/' + filename, type: 'file', mime: file.mime });
+          queue.push({ url: '/uploaded/' + filename, type: 'audioTag', mime: file.mime });
         }
         res.redirect('/queue');
       }

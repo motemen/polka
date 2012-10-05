@@ -1,18 +1,17 @@
 $(function () {
   var controller = new Controller();
 
-  var players = [
-    new YouTube(),
-    new SoundCloud(),
-    new UploadedFile()
-  ];
+  var players = {
+    youtube:    new Player.YouTube(),
+    soundcloud: new Player.SoundCloud(),
+    audioTag:   new Player.AudioTag()
+  };
 
   controller.loop(function (track) {
     console.log(track);
-    for (var i = 0; i < players.length; i++) {
-      if (players[i].handlesUrl(track.url)) {
-        return players[i].play(track.url);
-      }
+    var player = players[track.type];
+    if (player) {
+      return player.play(track);
     }
   });
 });
@@ -51,87 +50,98 @@ Controller.prototype.loop = function (play) {
 };
 // }}}
 
-// YouTube {{{
-// https://developers.google.com/youtube/iframe_api_reference
-function YouTube () {
-  this.PLAYER_PLACEHOLDER_ID = 'player-youtube-placeholder';
+// Player {{{
+function Player () {
   this.deferreds = {};
-};
+}
 
-YouTube.prototype = {
-  handlesUrl: function (url) {
-    return url.match(/^https?:\/\/\w+\.youtube\.com\//);
-  },
-  play: function (url) {
-    var videoId = this.extractVideoId(url);
+Player.prototype = {
+  play: function (track) {
+    // cancel previous play
     if (this.deferreds['play']) {
       this.deferreds['play'].reject();
     }
-    this.prepare(url).done(function (player) {
-      player.loadVideoById(videoId);
-    });
+
+    var self = this;
+    this.prepare(track).done(function () { self._play(track) });
+
     return this.deferreds['play'] = $.Deferred();
   },
-  prepare: function (initUrl) {
-    if (this.deferreds['prepare']) {
-      return this.deferreds['prepare'];
+  playEnded: function () {
+    if (this.deferreds['play']) {
+      this.deferreds['play'].resolve();
     }
-
-    var videoId = this.extractVideoId(initUrl);
-    var d = this.deferreds['prepare'] = $.Deferred();
-
-    $.getScript('//www.youtube.com/iframe_api');
-
-    $('<div/>', { id: this.PLAYER_PLACEHOLDER_ID }).appendTo(document.body);
-
-    var youtube = this;
-    window.onYouTubeIframeAPIReady = function () {
-      youtube.player = new YT.Player(youtube.PLAYER_PLACEHOLDER_ID, {
-        videoId: videoId,
-        events: {
-          onReady: function () { d.resolve(youtube.player) },
-          onStateChange: function (e) {
-            youtube.onPlayerStateChange(e);
-          }
-        }
-      });
-    };
-
+  },
+  prepare: function (track) {
+    return this.deferreds['prepare'] = this.deferreds['prepare'] || this._prepare(track);
+  },
+  _prepare: function () {
+    var d = $.Deferred();
+    d.resolve();
     return d;
-  },
-  onPlayerStateChange: function (e) {
-    if (e.data === YT.PlayerState.ENDED) {
-      if (this.deferreds['play']) {
-        this.deferreds['play'].resolve();
-      }
-    }
-  },
-  extractVideoId: function (url) {
-    return url.match(/[\?&]v=([^&]+)/)[1];
   }
 };
 // }}}
 
+// YouTube {{{
+// https://developers.google.com/youtube/iframe_api_reference
+Player.YouTube = function () {
+  this.PLAYER_PLACEHOLDER_ID = 'player-youtube-placeholder';
+  Player.call(this);
+};
+
+Player.YouTube.prototype = $.extend(
+  new Player, {
+    _play: function (track) {
+      this.player.loadVideoById(track.videoId);
+    },
+    _prepare: function (track) {
+      var d = $.Deferred();
+
+      $.getScript('//www.youtube.com/iframe_api');
+
+      $('<div/>', { id: this.PLAYER_PLACEHOLDER_ID }).appendTo(document.body);
+
+      var youtube = this;
+      window.onYouTubeIframeAPIReady = function () {
+        youtube.player = new YT.Player(youtube.PLAYER_PLACEHOLDER_ID, {
+          videoId: track.videoId,
+          events: {
+            onReady: function () {
+              d.resolve();
+            },
+            onStateChange: function (e) {
+              if (e.data === YT.PlayerState.ENDED) {
+                youtube.playEnded();
+              }
+            }
+          }
+        });
+      };
+
+      return d;
+    },
+    extractVideoId: function (url) {
+      return url.match(/[\?&]v=([^&]+)/)[1];
+    }
+  }
+);
+// }}}
+
 // SoundCloud {{{
-// XXX Currently supports only widget URL
 // http://developers.soundcloud.com/docs#playing
 // http://developers.soundcloud.com/docs/api/html5-widget
-function SoundCloud () {
+Player.SoundCloud = function () {
   this.PLAYER_IFRAME_ID = 'player-soundcloud-iframe';
   this.CLIENT_ID = '98365098cb72a68cf93fda1fcebf48e8';
-  this.deferreds = {};
-}
+  Player.call(this);
+};
 
-SoundCloud.prototype = {
-  handlesUrl: function (url) {
-    return url.match(/^http:\/\/soundcloud\.com\//);
-  },
-  play: function (url) {
-    if (this.deferreds['play']) {
-      this.deferreds['play'].reject();
-    }
-    var soundcloud = this;
-    this.prepare(url).done(function () {
+Player.SoundCloud.prototype = $.extend(
+  new Player(), {
+    _play: function (track) {
+      var url = track.url;
+      var soundcloud = this;
       console.log('embed ' + url);
       SC.oEmbed(url, { auto_play: true }, function (oEmbed) {
         var iframe = $(oEmbed.html).appendTo(document.body);
@@ -140,52 +150,39 @@ SoundCloud.prototype = {
         }
         var widget = SC.Widget(iframe.get(0));
         widget.bind(
-          SC.Widget.Events.READY, function () {
-            widget.bind(
-              SC.Widget.Events.FINISH,
-              function () { soundcloud.onPlayerFinished() }
-            );
-          }
+          SC.Widget.Events.FINISH,
+          function () { soundcloud.playEnded() }
         );
       });
-    });
-    return this.deferreds['play'] = $.Deferred();
-  },
-  prepare: function (initUrl) {
-    if (this.deferreds['prepare']) {
-      return this.deferreds['prepare'];
+    },
+    _prepare: function () {
+      return $.when(
+        $.getScript('http://connect.soundcloud.com/sdk.js'),
+        $.getScript('http://w.soundcloud.com/player/api.js')
+      );
     }
-
-    return this.deferreds['prepare'] = $.when(
-      $.getScript('http://connect.soundcloud.com/sdk.js'),
-      $.getScript('http://w.soundcloud.com/player/api.js')
-    );
-  },
-  onPlayerFinished: function () {
-    console.log('onPlayerFinished');
-    this.deferreds['play'].resolve();
   }
-};
+);
 // }}}
 
-// UploadedFile {{{
-function UploadedFile () {
-}
-
-UploadedFile.prototype = {
-  handlesUrl: function (url) {
-    return url.indexOf('/') === 0;
-  },
-  play: function (url) {
-    var d = $.Deferred();
-    var audio = $('<audio controls autoplay/>')
-      .attr('src', url)
-      .appendTo(document.body)
-      .bind('ended', function () {
-        console.log('ended');
-        d.resolve();
-      });
-    return d;
-  }
+// AudioTag {{{
+Player.AudioTag = function () {
+  Player.call(this);
 };
+
+Player.AudioTag.prototype = $.extend(
+  new Player(), {
+    _play: function (track) {
+      var url = track.url;
+      var audioTag = this;
+      var audio = $('<audio controls autoplay/>')
+        .attr('src', url)
+        .appendTo(document.body)
+        .bind('ended', function () {
+          console.log('ended');
+          audioTag.playEnded();
+        });
+    }
+  }
+);
 // }}}

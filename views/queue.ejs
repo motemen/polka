@@ -33,7 +33,7 @@
             <h2>Queue</h2>
 <% for (var i = 0; i < queue.length; i++) { %>
   <% var track = queue[i] %>
-            <div class="track tile double">
+            <div class="track tile double <%= track.type %>">
               <div class="tile-content">
   <% if (track.image && track.image.url) { %>
               <img src="<%= track.image.url %>" class="place-right">
