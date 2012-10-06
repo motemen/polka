@@ -19,30 +19,8 @@
       </div>
     </div>
 
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.js"></script>
     <script type="text/javascript" src="/javascripts/app.js"></script>
     <script type="text/javascript" src="/javascripts/socket.io.js"></script>
-    <script type="text/javascript">
-$(function () {
-  var socket = io.connect('http://localhost:3000');
-  socket.on('init', function (data) {
-    console.log(data);
-    $('#client-info').text('You are ' + (data.isPrimary ? 'prim' : 'echo'));
-  });
-  socket.on('play', function (track) {
-    console.log('play track=' + JSON.stringify(track));
-    if (!track) return;
-    var player = players[track.type];
-    if (player) {
-      socket.emit('update', { state: 'playing' });
-      player.play(track).done(function () {
-        socket.emit('update', { state: 'waiting' });
-        console.log('done');
-      });
-    }
-  });
-});
-    </script>
   </body>
 </html>

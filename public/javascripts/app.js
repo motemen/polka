@@ -1,58 +1,28 @@
-var global = this;
-
 $(function () {
-  var controller = new Controller();
-
-  var players = global.players = {
+  var players = {
     youtube:    new Player.YouTube(),
     soundcloud: new Player.SoundCloud(),
     audioTag:   new Player.AudioTag()
   };
 
-  /*
-  controller.loop(function (track) {
-    console.log(track);
+  var socket = io.connect('http://localhost:3000');
+  socket.on('init', function (data) {
+    console.log(data);
+    $('#client-info').text('You are ' + (data.isPrimary ? 'prim' : 'echo'));
+  });
+  socket.on('play', function (track) {
+    console.log('play track=' + JSON.stringify(track));
+    if (!track) return;
     var player = players[track.type];
     if (player) {
-      return player.play(track);
+      socket.emit('update', { state: 'playing' });
+      player.play(track).done(function () {
+        socket.emit('update', { state: 'waiting' });
+        console.log('done');
+      });
     }
   });
-  */
 });
-
-// Controller {{{
-function Controller () {
-}
-
-Controller.prototype.dequeue = function () {
-  return $.ajax(
-    '/dequeue', {
-      type: 'POST',
-      dataType: 'json'
-    }
-  );
-};
-
-Controller.prototype.loop = function (play) {
-  var controller = this;
-  var next = function () {
-    controller.dequeue().done(function (track) {
-      if (!track) {
-        setTimeout(next, 2000);
-        return;
-      }
-      var d = play(track);
-      if (d) {
-        d.always(next);
-      } else {
-        console.log('Could not play: ' + track.url);
-        next();
-      }
-    });
-  };
-  next();
-};
-// }}}
 
 // Player {{{
 function Player () {
