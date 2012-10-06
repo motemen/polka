@@ -1,12 +1,15 @@
+var global = this;
+
 $(function () {
   var controller = new Controller();
 
-  var players = {
+  var players = global.players = {
     youtube:    new Player.YouTube(),
     soundcloud: new Player.SoundCloud(),
     audioTag:   new Player.AudioTag()
   };
 
+  /*
   controller.loop(function (track) {
     console.log(track);
     var player = players[track.type];
@@ -14,6 +17,7 @@ $(function () {
       return player.play(track);
     }
   });
+  */
 });
 
 // Controller {{{

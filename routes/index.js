@@ -1,5 +1,4 @@
-var queue = [], currentTrack;
-
+var playlist   = require('../lib/playlist');
 var youtube    = require('../lib/track/youtube');
 var soundcloud = require('../lib/track/soundcloud');
 
@@ -8,7 +7,7 @@ exports.index = function (req, res) {
 };
 
 exports.queue = function (req, res) {
-  res.render('queue', { queue: queue, currentTrack: currentTrack });
+  res.render('queue', { playlist: playlist, tracks: playlist.getTracks(), index: playlist.getIndex(), currentTrack: playlist.getCurrentTrack() });
 };
 
 exports.enqueue = function (req, res) {
@@ -18,14 +17,14 @@ exports.enqueue = function (req, res) {
       if (service.handlesUrl(url)) {
         service.fetchTrackInfo(url, function (track) {
           console.log(track);
-          queue.push(track);
+          playlist.add(track);
           res.redirect('/queue');
         });
         return true;
       }
     });
     if (!handled) {
-      queue.push({ url: url });
+      playlist.add({ url: url });
       res.redirect('/queue');
     }
   } else if (req.files.file) {
@@ -40,7 +39,7 @@ exports.enqueue = function (req, res) {
       fs.createWriteStream(path.join(__dirname, '..', 'public', 'uploaded', filename)),
       function (error) {
         if (!error) {
-          queue.push({ url: '/uploaded/' + filename, type: 'audioTag', mime: file.mime });
+          playlist.add({ url: '/uploaded/' + filename, type: 'audioTag', mime: file.mime });
         }
         res.redirect('/queue');
       }
@@ -48,11 +47,6 @@ exports.enqueue = function (req, res) {
   } else {
     res.redirect('/queue');
   }
-};
-
-exports.dequeue = function (req, res) {
-  currentTrack = queue.shift();
-  res.json(currentTrack);
 };
 
 exports.play = function (req, res) {

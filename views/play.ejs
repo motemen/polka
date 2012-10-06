@@ -3,10 +3,46 @@
   <head>
     <title>Polka - Play</title>
     <link rel="stylesheet" href="/stylesheets/modern.css">
+    <link rel="stylesheet" href="/stylesheets/modern.css">
+    <link rel="stylesheet" href="/stylesheets/site.css">
   </head>
-  <body>
+  <body class="modern-ui">
+    <div class="page secondary">
+      <div class="page-header">
+        <div class="page-header-content">
+          <h1>Play <small id="client-info"></small></h1>
+        </div>
+      </div>
+      <div class="page-region">
+        <div class="page-region-content">
+        </div>
+      </div>
+    </div>
+
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
     <script type="text/javascript" src="/javascripts/app.js"></script>
+    <script type="text/javascript" src="/javascripts/socket.io.js"></script>
+    <script type="text/javascript">
+$(function () {
+  var socket = io.connect('http://localhost:3000');
+  socket.on('init', function (data) {
+    console.log(data);
+    $('#client-info').text('You are ' + (data.isPrimary ? 'prim' : 'echo'));
+  });
+  socket.on('play', function (track) {
+    console.log('play track=' + JSON.stringify(track));
+    if (!track) return;
+    var player = players[track.type];
+    if (player) {
+      socket.emit('update', { state: 'playing' });
+      player.play(track).done(function () {
+        socket.emit('update', { state: 'waiting' });
+        console.log('done');
+      });
+    }
+  });
+});
+    </script>
   </body>
 </html>

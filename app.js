@@ -1,7 +1,8 @@
-var express = require('express')
-  , routes = require('./routes')
-  , http = require('http')
-  , path = require('path');
+var express = require('express'),
+    routes  = require('./routes'),
+    http    = require('http'),
+    path    = require('path'),
+    io      = require('socket.io');
 
 var app = express();
 
@@ -29,6 +30,59 @@ app.get ('/queue',   routes.queue);
 app.post('/queue',   routes.enqueue);
 app.post('/dequeue', routes.dequeue);
 
-http.createServer(app).listen(app.get('port'), function () {
+var server = http.createServer(app);
+var socket = io.listen(server);
+
+var manager  = require('./lib/clientsManager.js');
+var playlist = require('./lib/playlist.js');
+
+server.listen(app.get('port'), function () {
   console.log("Express server listening on port " + app.get('port'));
+});
+
+playlist.events.on('next', function (track) {
+  manager.forEachClient(function (client) {
+    client.emit('play', track);
+  });
+});
+
+playlist.events.on('add', function (track) {
+  var state = manager.getPrimaryClientState();
+  if (state === 'waiting') {
+      playlist.next();
+  }
+});
+
+socket.on('connection', function (client) {
+  var clientInfo = manager.addClient(client);
+  client.emit('init', clientInfo);
+
+  client.state = 'waiting';
+
+  var prim = manager.getPrimaryClient();
+  var state = manager.getPrimaryClientState();
+  if (state === 'waiting') {
+    playlist.next();
+  } else if (state === 'playing') {
+    // copy state
+    // TODO seek
+    if (client !== prim) {
+      client.emit('play', playlist.getCurrentTrack());
+    }
+  } else {
+    console.log('cannot handle ' + state);
+  }
+
+  client.on('update', function (info) {
+    console.log('update -> ', info.state);
+    client.state = info.state;
+    var prim = manager.getPrimaryClient();
+    if (client === prim) {
+      playlist.next();
+    }
+  });
+
+  client.on('disconnect', function () {
+    manager.removeClient(client);
+  });
 });

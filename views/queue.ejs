@@ -9,30 +9,16 @@
     <div class="page secondary">
       <div class="page-header">
         <div class="page-header-content">
-          <h1>Polka</h1>
+          <h1>Queue</h1>
         </div>
       </div>
       <div class="page-region">
         <div class="page-region-content">
-<% if (currentTrack) { %>
-  <% var track = currentTrack %>
-          <div id="current-track" class="grid">
-            <h2>Current track</h2>
-            <div class="track">
-  <% if (track.image && track.image.url) { %>
-              <img src="<%= track.image.url %>" class="place-left">
-  <% } %>
-              <h3 class="title"><%= track.title || track.url %></h3>
-  <% if (track.title) { %>
-              <a href="<%= track.url %>"><%= track.url %></a>
-  <% } %>
-            </div>
-          </div>
-<% } %>
-          <div id="queue" class="grid">
-            <h2>Queue</h2>
-<% for (var i = 0; i < queue.length; i++) { %>
-  <% var track = queue[i] %>
+
+          <div id="tracks" class="grid">
+            <h2>Tracks</h2>
+<% for (var i = 0; i < tracks.length; i++) { %>
+  <% var track = tracks[i] %>
             <div class="track tile double <%= track.type %>">
               <div class="tile-content">
   <% if (track.image && track.image.url) { %>
@@ -42,12 +28,19 @@
   <% if (track.title) { %>
               <a href="<%= track.url %>"><%= track.url %></a>
   <% } %>
+  <% if (currentTrack && i === index) { %>
+              <div class="brand">
+                <div class="bage badge playing"></div>
+              </div>
+  <% } %>
               </div>
             </div>
 <% } %>
           </div>
+
           <div class="grid">
             <div class="row">
+
               <div class="span5">
                 <h2>Add a URL</h2>
                 <form action="/queue" method="POST" enctype="multipart/form-data">
@@ -57,6 +50,7 @@
                   <input type="submit" value="enqueue">
                 </form>
               </div>
+
               <div class="span5">
                 <h2>Upload a file</h2>
                 <form action="/queue" method="POST" enctype="multipart/form-data">
@@ -66,8 +60,10 @@
                   <input type="submit" value="upload">
                 </form>
               </div>
+
             </div>
           </div>
+
         </div>
       </div>
     </div>
