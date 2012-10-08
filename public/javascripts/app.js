@@ -5,7 +5,7 @@ $(function () {
         audioTag:   new Player.AudioTag()
     };
 
-    var socket = io.connect('http://localhost:3000');
+    var socket = io.connect(location.protocol + '//' + location.host);
     socket.on('init', function (data) {
         console.log(data);
         $('#client-info').text('You are ' + (data.isPrimary ? 'prim' : 'echo'));
