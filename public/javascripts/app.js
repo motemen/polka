@@ -80,6 +80,7 @@ Player.YouTube.prototype = $.extend(
         window.onYouTubeIframeAPIReady = function () {
             youtube.player = new YT.Player(youtube.PLAYER_PLACEHOLDER_ID, {
                 videoId: track.videoId,
+                playerVars: { autoplay: 1, controls: 0 },
                 events: {
                     onReady: function () {
                         d.resolve();
@@ -117,7 +118,7 @@ Player.SoundCloud.prototype = $.extend(
         var url = track.url;
         var soundcloud = this;
         console.log('embed ' + url);
-        SC.oEmbed(url, { auto_play: true }, function (oEmbed) {
+        SC.oEmbed(url, { auto_play: true, buying: false, liking: false, download: false, sharing: false, show_comments: false, show_playcount: false }, function (oEmbed) {
             var iframe = $(oEmbed.html).appendTo(document.body);
             if (!iframe.is('iframe')) {
                 console.log('got no iframe', iframe);
