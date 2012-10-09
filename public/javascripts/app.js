@@ -8,7 +8,7 @@ $(function () {
     var socket = io.connect(location.protocol + '//' + location.host);
     socket.on('init', function (data) {
         console.log(data);
-        $('#client-info').text('You are ' + (data.isPrimary ? 'prim' : 'echo'));
+        $('#client-info').text('You are ' + (data.isPrimary ? 'master' : 'echo'));
     });
     socket.on('play', function (track) {
         console.log('play track=' + JSON.stringify(track));
@@ -16,9 +16,11 @@ $(function () {
         var player = players[track.type];
         if (player) {
             socket.emit('update', { state: 'playing' });
+            document.title = '► ' + track.title || track.url;
             player.play(track).done(function () {
                 socket.emit('update', { state: 'waiting' });
                 console.log('done');
+                document.title = 'Polka - Play';
             });
         }
     });
