@@ -70,7 +70,7 @@ socket.on('connection', function (client) {
 
     if (!isPrimary) {
         // echo
-        client.emit('play', playlist.getCurrentTrack());
+        client.emit('play', playlist.currentTrack);
     }
 
     client.on('update', function (info) {
