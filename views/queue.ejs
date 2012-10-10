@@ -22,7 +22,7 @@
             <div class="track tile double <%= track.type %>">
               <div class="tile-content">
   <% if (track.image && track.image.url) { %>
-              <img src="<%= track.image.url %>" class="place-right">
+              <img src="<%= track.image.url %>" class="artwork place-right">
   <% } %>
               <h3 class="title"><%= track.title || track.url %></h3>
   <% if (track.title) { %>
@@ -30,7 +30,7 @@
   <% } %>
   <% if (currentTrack && i === index) { %>
               <div class="brand">
-                <div class="bage badge playing"></div>
+                <div class="badge playing"></div>
               </div>
   <% } %>
               </div>

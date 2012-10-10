@@ -12,3 +12,7 @@
 .input-control > input[type=url]:focus {
   border-color: #000;
 }
+
+.track img.artwork {
+    max-width: 150px;
+}
