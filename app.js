@@ -58,6 +58,8 @@ playlist.events.on('add', function (track) {
 manager.events.on('primaryStateChange', function (state) {
     if (state === 'waiting') {
         playlist.next(true);
+    } else if (state === 'playing') {
+        playlist.currentTrack.playStartedAt = new Date().getTime() / 1000;
     }
 });
 
@@ -70,7 +72,7 @@ socket.on('connection', function (client) {
 
     if (!isPrimary) {
         // echo
-        client.emit('play', playlist.currentTrack);
+        client.emit('play', playlist.currentTrack, { time: new Date().getTime() / 1000 });
     }
 
     client.on('update', function (info) {

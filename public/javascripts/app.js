@@ -12,14 +12,17 @@ $(function () {
         console.log(data);
         $('#client-info').text('You are ' + (data.isPrimary ? 'master' : 'echo'));
     });
-    socket.on('play', function (track) {
+    socket.on('play', function (track, meta) {
         console.log('play track=' + JSON.stringify(track));
         if (!track) return;
         var player = players[track.type];
         if (player) {
-            socket.emit('update', { state: 'playing' });
-            document.title = '► ' + track.title || track.url;
-            player.play(track).done(function () {
+            var pos = meta && meta.time - track.playStartedAt; // may be NaN
+            player.prepare(track).done(function () {
+                socket.emit('update', { state: 'playing' });
+                document.title = '► ' + track.title || track.url;
+            });
+            player.play(track, { pos: pos }).done(function () {
                 socket.emit('update', { state: 'waiting' });
                 console.log('done');
                 document.title = 'Polka - Play';
@@ -34,14 +37,14 @@ function Player () {
 }
 
 Player.prototype = {
-    play: function (track) {
+    play: function (track, option) {
         // cancel previous play
         if (this.deferreds['play']) {
             this.deferreds['play'].reject();
         }
 
         var self = this;
-        this.prepare(track).done(function () { self._play(track) });
+        this.prepare(track).done(function () { self._play(track, option) });
 
         return this.deferreds['play'] = $.Deferred(function (d) {
             d.fail(function () { self.cleanup() })
@@ -74,8 +77,8 @@ Player.YouTube = function () {
 
 Player.YouTube.prototype = $.extend(
     new Player, {
-    _play: function (track) {
-        this.player.loadVideoById(track.videoId);
+    _play: function (track, option) {
+        this.player.loadVideoById(track.videoId, option && option.pos || 0);
     },
     _prepare: function (track) {
         var d = $.Deferred();
@@ -120,19 +123,30 @@ Player.SoundCloud = function () {
 
 Player.SoundCloud.prototype = $.extend(
     new Player(), {
-    _play: function (track) {
+    _play: function (track, option) {
         var url = track.url;
-        var soundcloud = this;
+        var self = this;
         console.log('embed ' + url);
         SC.oEmbed(url, { auto_play: true, buying: false, liking: false, download: false, sharing: false, show_comments: false, show_playcount: false }, function (oEmbed) {
-            var placeholder = $(document.getElementById(soundcloud.PLAYER_PLACEHOLDER_ID));
+            var placeholder = $(document.getElementById(self.PLAYER_PLACEHOLDER_ID));
             placeholder.children().hide(); // do not remove; SC.Widget keeps reference
             var container = $('<div/>').html(oEmbed.html).appendTo(placeholder);
             var widget = SC.Widget(container.find('iframe').get(0));
             widget.bind(
                 SC.Widget.Events.FINISH,
-                function () { console.log('finish ' + url); soundcloud.playEnded() }
+                function () { console.log('finish ' + url); self.playEnded() }
             );
+            if (option && option.pos) {
+                widget.bind(
+                    SC.Widget.Events.LOAD_PROGRESS,
+                    function (e) {
+                        if (e.loadedProgress === 1) {
+                            widget.seekTo(option.pos * 1000);
+                        }
+                    }
+                );
+            }
+            self.widget = widget;
         });
     },
     _prepare: function () {
