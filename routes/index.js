@@ -7,7 +7,7 @@ exports.index = function (req, res) {
 };
 
 exports.queue = function (req, res) {
-    res.render('queue', { playlist: playlist, tracks: playlist.getTracks(), index: playlist.getIndex(), currentTrack: playlist.getCurrentTrack() });
+    res.render('queue', { playlist: playlist });
 };
 
 exports.enqueue = function (req, res) {

@@ -27,7 +27,7 @@
               <tbody>
               <% for (var i = 0; i < playlist.tracks.length; i++) { %>
               <%   var track = playlist.tracks[i]; %>
-              <tr <% if (i === playlist.index) { %> class="selected-row"<% } %>>
+              <tr <% if (playlist.currentTrack && i === playlist.index) { %> class="selected-row"<% } %>>
                 <td><%= i+1 %></td>
                 <td><a href="<%= track.url %>"><%= track.url %></a></td>
                 <td><%= track.title %></td>

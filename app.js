@@ -74,7 +74,7 @@ socket.on('connection', function (client) {
     }
 
     client.on('update', function (info) {
-        console.log('[' + client.id + '] state -> ', info.state);
+        console.log('[' + client.id + ']', 'state ->', info.state);
         manager.setClientState(client, info.state);
     });
 

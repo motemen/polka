@@ -17,8 +17,8 @@
 
           <div id="tracks" class="grid">
             <h2>Tracks</h2>
-<% for (var i = 0; i < tracks.length; i++) { %>
-  <% var track = tracks[i] %>
+<% for (var i = 0; i < playlist.tracks.length; i++) { %>
+  <% var track = playlist.tracks[i] %>
             <div class="track tile double <%= track.type %>">
               <div class="tile-content">
   <% if (track.image && track.image.url) { %>
@@ -28,7 +28,7 @@
   <% if (track.title) { %>
               <a href="<%= track.url %>"><%= track.url %></a>
   <% } %>
-  <% if (currentTrack && i === index) { %>
+  <% if (playlist.currentTrack && i === playlist.index) { %>
               <div class="brand">
                 <div class="badge playing"></div>
               </div>
