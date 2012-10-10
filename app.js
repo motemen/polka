@@ -1,5 +1,6 @@
 var express = require('express'),
     routes  = require('./routes'),
+    admin   = require('./routes/admin.js'),
     http    = require('http'),
     path    = require('path'),
     io      = require('socket.io');
@@ -28,6 +29,9 @@ app.get ('/',        routes.index);
 app.get ('/play',    routes.play);
 app.get ('/queue',   routes.queue);
 app.post('/queue',   routes.enqueue);
+
+app.get ('/admin',              admin.index);
+app.post('/admin/control/next', admin.next);
 
 var server = http.createServer(app);
 var socket = io.listen(server);

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Polka - Admin</title>
+    <link rel="stylesheet" href="/stylesheets/modern.css">
+    <link rel="stylesheet" href="/stylesheets/site.css">
+  </head>
+  <body class="modern-ui">
+    <div class="page secondary">
+      <div class="page-header">
+        <div class="page-header-content">
+          <h1>Admin</h1>
+        </div>
+      </div>
+      <div class="page-region">
+        <div class="page-region-content">
+
+          <section id="tracks" class="grid">
+            <h2>Tracks</h2>
+
+            <table class="striped">
+              <thead>
+                <th>#</th>
+                <th>URL</th>
+                <th>Title</th>
+              </thead>
+              <tbody>
+              <% for (var i = 0; i < playlist.tracks.length; i++) { %>
+              <%   var track = playlist.tracks[i]; %>
+              <tr <% if (i === playlist.index) { %> class="selected-row"<% } %>>
+                <td><%= i+1 %></td>
+                <td><a href="<%= track.url %>"><%= track.url %></a></td>
+                <td><%= track.title %></td>
+              </tr>
+              <% } %>
+              </tbody>
+            </table>
+
+            <form action="/admin/control/next" method="POST">
+              <input type="submit" value="Next">
+            </form>
+          </section>
+
+          <div id="clients" class="grid">
+            <h2>Clients</h2>
+            <table>
+              <thead>
+                <th><!-- master --></th>
+                <th>ID</th>
+                <th>state</th>
+              </thead>
+              <tbody>
+              <% for (var id in manager.clients) { %>
+              <%   var client = manager.clients[id]; %>
+              <tr>
+                <td><% if (manager.isClientPrimary(client.socket)) { %>&#x2654;<% } %></td>
+                <td><%= id %></td>
+                <td><%= client.state %></td>
+              </tr>
+              <% } %>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
