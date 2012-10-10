@@ -6,10 +6,17 @@ $(function () {
         timerId = setTimeout( function () {
             $('#result').html('');
             if (word.length == 0) return;
-            var url = "http://gdata.youtube.com/feeds/api/videos/-/music?q="
-                        + encodeURIComponent(word)
-                        + "&max-results=12&v=2&alt=json&callback=?";
-            $.getJSON(url,function(json) {
+            $.ajax({
+                url: 'http://gdata.youtube.com/feeds/api/videos/-/music',
+                type: 'get',
+                dataType: 'jsonp',
+                data: {
+                    'q'          : word,
+                    'v'          : 2,
+                    'alt'        : 'json',
+                    'max-results': 12
+                }
+            }).done(function(json) {
                 if (json.feed.entry.length > 0) {
                     var result = $('#result');
                     result.html('');
