@@ -14,7 +14,8 @@ $(function () {
                     'q'          : word,
                     'v'          : 2,
                     'alt'        : 'json',
-                    'max-results': 12
+                    'max-results': 12,
+                    'format'     : 5
                 }
             }).done(function(json) {
                 if (json.feed.entry.length > 0) {
