@@ -26,15 +26,19 @@ $(function () {
                             name : 'url',
                             value : entry.link[0].href
                         });
-                        var iframe = $('<iframe />').attr({
-                            width  : 201,
-                            height : 131,
-                            src    : 'http://www.youtube.com/embed/' + entry.media$group.yt$videoid.$t ,
-                            frameborder : 0
+                        var link = $('<a />').attr({
+                            href: entry.link[0].href,
+                            target: '_blank'
+                        });
+                        var thumbnail = $('<img />').attr({
+                            src: entry['media$group']['media$thumbnail'][1]['url'],
+                            title: entry['media$group']['media$title']['$t']
+                        }).css({
+                            width: '200px'
                         });
                         var button = $('<button />').attr('type','submit').addClass('default').text('enqueue');
                         form.append(hidden);
-                        form.append(iframe);
+                        form.append(link.append(thumbnail));
                         form.append(button);
                         span.append(form);
                         result.append(span);
