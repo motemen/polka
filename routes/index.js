@@ -17,7 +17,9 @@ exports.enqueue = function (req, res) {
             if (service.handlesUrl(url)) {
                 service.fetchTrackInfo(url, function (track) {
                     console.log(track);
-                    playlist.add(track);
+                    if (track) {
+                        playlist.add(track);
+                    }
                     res.redirect('/queue');
                 });
                 return true;
