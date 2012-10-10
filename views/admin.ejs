@@ -48,6 +48,7 @@
                 <th><!-- master --></th>
                 <th>ID</th>
                 <th>state</th>
+                <th>address</th>
               </thead>
               <tbody>
               <% for (var id in manager.clients) { %>
@@ -56,6 +57,7 @@
                 <td><% if (manager.isClientPrimary(client.socket)) { %>&#x2654;<% } %></td>
                 <td><%= id %></td>
                 <td><%= client.state %></td>
+                <td><%= client.socket.handshake.address.address %></td>
               </tr>
               <% } %>
               </tbody>
