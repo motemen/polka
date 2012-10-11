@@ -31,12 +31,19 @@ $(function () {
     });
     socket.on('chatmessage', function (message) {
         var date = new Date();
-        $('#chat-messages').prepend(
-            $('<li/>').addClass('message').append(
-                $('<span/>').addClass('timestamp').text(date.toLocaleTimeString()),
-                $('<span/>').addClass('body').text(message)
-            )
+        var li = $('<li/>').addClass('message').append(
+            $('<span/>').addClass('timestamp').text(date.toLocaleTimeString()),
+            $('<span/>').addClass('body').text(message.message)
         );
+        if (message.votes) {
+            li.append(
+                $('<span class="votes"/>').append(
+                    $('<span class="vote-up"/>')  .text((message.votes['++'] || 0) + '++'),
+                    $('<span class="vote-down"/>').text((message.votes['--'] || 0) + '--')
+                )
+            )
+        }
+        $('#chat-messages').prepend(li);
     });
 
     $('#chat').submit(function () {

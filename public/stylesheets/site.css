@@ -17,15 +17,37 @@
     max-width: 150px;
 }
 
+#chat-controls {
+    max-width: 30%;
+}
+
 #chat-messages {
     max-height: 500px;
     overflow: auto;
+    background-color: rgba(255,255,255,0.5);
+}
+
+#chat-messages li {
+    word-break: break-all;
 }
 
 #chat-messages span.timestamp {
     color: #777;
     font-size: smaller;
     margin-right: 0.5em;
+}
+
+#chat-messages .votes {
+    font-size: smaller;
+    margin-left: 0.5em;
+}
+
+#chat-messages .votes .vote-up {
+    color: green;
+}
+
+#chat-messages .votes .vote-down {
+    color: red;
 }
 
 #chat input {

@@ -85,7 +85,15 @@ socket.on('connection', function (client) {
     });
 
     client.on('chatmessage', function (message) {
-        client.emit('chatmessage', message);
-        client.broadcast.emit('chatmessage', message);
+        var msg = {
+            message: message
+        };
+        if (message === '++' || message === '--') {
+            playlist.voteCurrentTrack(client.id, message);
+            msg.votes = playlist.getTrackVotes(playlist.currentTrack);
+        }
+
+        client.emit('chatmessage', msg);
+        client.broadcast.emit('chatmessage', msg);
     });
 });
