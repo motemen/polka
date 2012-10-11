@@ -53,3 +53,12 @@
 #chat input {
     margin-right: 0;
 }
+
+#page-index h2 a {
+    color: inherit;
+    font: inherit;
+}
+
+#page-index #menu {
+    margin-top: 5%;
+}

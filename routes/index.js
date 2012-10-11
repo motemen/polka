@@ -1,9 +1,10 @@
 var playlist   = require('../lib/playlist');
+var manager    = require('../lib/clientsManager');
 var youtube    = require('../lib/track/youtube');
 var soundcloud = require('../lib/track/soundcloud');
 
 exports.index = function (req, res) {
-    res.redirect('/queue');
+    res.render('index', { playlist: playlist, manager: manager });
 };
 
 exports.queue = function (req, res) {
