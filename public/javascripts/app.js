@@ -29,6 +29,23 @@ $(function () {
             });
         }
     });
+    socket.on('chatmessage', function (message) {
+        var date = new Date();
+        $('#chat-messages').prepend(
+            $('<li/>').addClass('message').append(
+                $('<span/>').addClass('timestamp').text(date.toLocaleTimeString()),
+                $('<span/>').addClass('body').text(message)
+            )
+        );
+    });
+
+    $('#chat').submit(function () {
+        var messageBody = $('#message-body');
+        socket.emit('chatmessage', messageBody.val());
+        messageBody.val('');
+
+        return false;
+    });
 });
 
 // Player {{{

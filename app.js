@@ -83,4 +83,9 @@ socket.on('connection', function (client) {
     client.on('disconnect', function () {
         manager.removeClient(client);
     });
+
+    client.on('chatmessage', function (message) {
+        client.emit('chatmessage', message);
+        client.broadcast.emit('chatmessage', message);
+    });
 });
