@@ -3,7 +3,6 @@
   <head>
     <title>Polka - Play</title>
     <link rel="stylesheet" href="/stylesheets/modern.css">
-    <link rel="stylesheet" href="/stylesheets/modern.css">
     <link rel="stylesheet" href="/stylesheets/site.css">
   </head>
   <body class="modern-ui">
@@ -19,10 +18,12 @@
       </div>
       <div class="charms">
         <form id="chat" action="" onsubmit="return false;">
-          <input id="message-body" name="message-body" type="text">
-          <input type="submit">
+          <div class="input-control">
+            <input id="message-body" name="message-body" type="text" placeholder="chat…">
+            <input type="submit" style="displaY: none">
+          </div>
         </form>
-        <ul id="chat-messages">
+        <ul id="chat-messages" class="unstyled">
         </ul>
       </div>
     </div>

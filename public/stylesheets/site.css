@@ -16,3 +16,18 @@
 .track img.artwork {
     max-width: 150px;
 }
+
+#chat-messages {
+    max-height: 500px;
+    overflow: auto;
+}
+
+#chat-messages span.timestamp {
+    color: #777;
+    font-size: smaller;
+    margin-right: 0.5em;
+}
+
+#chat input {
+    margin-right: 0;
+}
