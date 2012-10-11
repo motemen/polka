@@ -154,11 +154,13 @@ Player.SoundCloud.prototype = $.extend(
                 function () { console.log('finish ' + url); self.playEnded() }
             );
             if (option && option.pos) {
+                var posSet;
                 widget.bind(
                     SC.Widget.Events.LOAD_PROGRESS,
                     function (e) {
-                        if (e.loadedProgress === 1) {
+                        if (e.loadedProgress === 1 && !posSet) {
                             widget.seekTo(option.pos * 1000);
+                            posSet = true;
                         }
                     }
                 );
