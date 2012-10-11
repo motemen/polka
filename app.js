@@ -30,6 +30,8 @@ app.get ('/play',    routes.play);
 app.get ('/queue',   routes.queue);
 app.post('/queue',   routes.enqueue);
 
+app.get ('/dump',    routes.dump);
+
 app.get ('/admin',              admin.index);
 app.post('/admin/control/next', admin.next);
 

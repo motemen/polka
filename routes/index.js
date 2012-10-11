@@ -54,3 +54,12 @@ exports.enqueue = function (req, res) {
 exports.play = function (req, res) {
     res.render('play');
 };
+
+exports.dump = function (req, res) {
+    res.send({
+        playlist: {
+            tracks: playlist.tracks,
+            index: playlist.index
+        }
+    });
+};
