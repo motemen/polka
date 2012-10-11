@@ -41,4 +41,4 @@ Polka currently supports these webservices' media:
 Screenshot
 ----------
 
-![The queue](https://lh6.googleusercontent.com/-lbEHSKb7XaU/UHa86kvmV3I/AAAAAAAAF1o/Zw_J73tlcLk/s880/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%EF%BC%882012-10-11+21.33.15%EF%BC%89.png)
+![The queue](https://lh3.googleusercontent.com/-KQS239wqsIw/UHa_KARdrtI/AAAAAAAAF14/QA2icP1v5ZQ/s880/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%EF%BC%882012-10-11+21.43.14%EF%BC%89.png)
