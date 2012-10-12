@@ -178,8 +178,8 @@ Player.SoundCloud.prototype = $.extend(
     _prepare: function () {
         var self = this;
         return $.when(
-            $.getScript('http://connect.soundcloud.com/sdk.js'),
-            $.getScript('http://w.soundcloud.com/player/api.js')
+            $.getScript('//connect.soundcloud.com/sdk.js'),
+            $.getScript('//w.soundcloud.com/player/api.js')
         ).pipe(function () {
             $('<div/>', { id: self.PLAYER_PLACEHOLDER_ID }).appendTo(document.body);
         });
