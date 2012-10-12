@@ -70,18 +70,39 @@
               </div>
             </div>
             <div class="row">
-              <div class="span10" id="result">
-              </div>
+              <table id="result">
+                <tbody id="result-item-container">
+                </tbody>
+              </table>
               <script type="text/x-underscore-template" id="search-result-template">
-                <span class="span3 track">
-                  <form action="/queue" method="POST">
-                    <input type="hidden" name="url" value="{{= track.url }}">
+                <tr>
+                  <td>
+                    {{if (track.type === 'youtube')}}<img src="http://www.youtube.com/favicon.ico">{{;}}
+                    {{if (track.type === 'soundcloud')}}<img src="http://soundcloud.com/favicon.ico">{{;}}
+                  </td>
+                  <td class="thumbnail">
                     <a href="{{= track.url }}" target="_blank">
                       <img class="artwork" src="{{= track.image.url }}" title="{{= track.title }}">
                     </a>
-                    <button type="submit">enqueue</button>
-                  </form>
-                </span>
+                  </td>
+                  <td class="title">
+                    <a href="{{= track.url }}" target="_blank">
+                      {{= track.title }}
+                    </a>
+                  </td>
+                  <td class="duration">
+                    {{= Math.floor(track.duration / 60) }}:{{= (100 + Math.floor(track.duration % 60) + '').substr(-2, 2) }}
+                  </td>
+                  <td class="reputation">
+                     &#x25BA;{{= track.plays }} / &#x2605; {{= isNaN(track.favs) ? '-' : track.favs }}
+                  </td>
+                  <td class="control">
+                    <form action="/queue" method="POST">
+                      <input type="hidden" name="url" value="{{= track.url }}">
+                      <button type="submit">enqueue</button>
+                    </form>
+                  </td>
+                </tr>
               </script>
             </div>
           </div>

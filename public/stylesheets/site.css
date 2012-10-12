@@ -62,3 +62,15 @@
 #page-index #menu {
     margin-top: 5%;
 }
+
+#result-item-container td.thumbnail {
+    text-align: center;
+}
+
+#result-item-container td.thumbnail img {
+    max-height: 48px;
+}
+
+#result-item-container td.title a {
+    font: inherit;
+}
